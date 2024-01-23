@@ -4,34 +4,56 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class TaskController extends Controller
 {
     /**
-     * @return AnonymousResourceCollection
+     * @return JsonResponse
      */
-    public function index(): AnonymousResourceCollection
+    public function index(): JsonResponse
     {
-        return TaskResource::collection(Task::all());
+        return response()->json(TaskResource::collection(Task::all()));
     }
 
     /**
      * @param Request $request
-     * @return TaskResource
+     * @return JsonResponse
      */
-    public function store(Request $request): TaskResource
+    public function store(Request $request): JsonResponse
     {
-        return new TaskResource(Task::create($request->all()));
+        return response()->json(new TaskResource(Task::create($request->all())));
     }
 
     /**
      * @param $id
-     * @return TaskResource
+     * @return JsonResponse
      */
-    public function show($id): TaskResource
+    public function show($id):JsonResponse
     {
-        return new TaskResource(Task::find($id));
+        return response()->json(new TaskResource(Task::find($id)));
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(Request $request, $id): JsonResponse
+    {
+        $task = Task::find($id);
+        $task->update($request->all());
+        return response()->json(new TaskResource($task));
+    }
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
+    public function destroy($id): JsonResponse
+    {
+        return response()->json(['deleted' => Task::find($id)->delete()]);
     }
 }
